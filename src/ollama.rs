@@ -180,17 +180,16 @@ impl LlmClient for OllamaClient {
                         }
                     }
                     if let Some(c) = msg.content.filter(|s| !s.is_empty()) {
-                        // First content chunk after thinking → close the thinking section.
-                        if printed_thinking_header && !printed_content_header {
-                            eprintln!();
-                            eprintln!("--- model response ---");
-                            printed_content_header = true;
-                        } else if self.show_content_stream && !printed_content_header {
-                            eprintln!("--- model response ---");
-                            printed_content_header = true;
-                        }
                         content.push_str(&c);
                         if self.show_content_stream {
+                            if !printed_content_header {
+                                // Close the thinking section's last (possibly partial) line.
+                                if printed_thinking_header {
+                                    eprintln!();
+                                }
+                                eprintln!("--- model response ---");
+                                printed_content_header = true;
+                            }
                             eprint!("{c}");
                             let _ = std::io::stderr().flush();
                         }
