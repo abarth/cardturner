@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use tracing::{debug, trace};
 
 use crate::auction::{Auction, Call};
 use crate::hand::Hand;
@@ -40,8 +41,11 @@ pub async fn bid(
     client: &dyn LlmClient,
 ) -> Result<BidResponse, BidError> {
     let user = build_user_message(hand, auction);
+    debug!(user_message_chars = user.len(), "built user message");
+    trace!(user_message = %user, "user message");
     let raw = client.chat(system_prompt, &user).await?;
     let parsed: BidResponse =
         serde_json::from_str(&raw).map_err(|e| BidError::BadJson(e, raw.clone()))?;
+    debug!(bid = %parsed.bid, "parsed bid response");
     Ok(parsed)
 }

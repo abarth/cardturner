@@ -3,7 +3,8 @@ use std::process::ExitCode;
 
 use anyhow::{Context, Result};
 use cardturner::{bid, Auction, Hand, OllamaClient, Seat, Vulnerability};
-use clap::Parser;
+use clap::{ArgAction, Parser};
+use tracing_subscriber::{fmt, EnvFilter};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -39,6 +40,19 @@ struct Args {
     /// Path to the system prompt (Markdown). Defaults to `prompts/sayc.md`.
     #[arg(long, default_value = "prompts/sayc.md")]
     system_prompt: PathBuf,
+
+    /// Increase logging verbosity. `-v` = debug, `-vv` = trace. Silent by default.
+    /// `-v` also streams the model's response tokens to stderr as they arrive.
+    /// Set RUST_LOG to override entirely.
+    #[arg(short, long, action = ArgAction::Count)]
+    verbose: u8,
+
+    /// Stream the model's chain-of-thought to stderr.
+    /// Reasoning-capable models (deepseek-r1, qwq, gpt-oss, ...) always think;
+    /// this flag only controls whether you see the transcript. Non-thinking
+    /// models simply don't produce a thinking field.
+    #[arg(long)]
+    show_thinking: bool,
 }
 
 #[tokio::main]
@@ -54,6 +68,7 @@ async fn main() -> ExitCode {
 
 async fn run() -> Result<()> {
     let args = Args::parse();
+    init_tracing(args.verbose);
 
     let hand: Hand = args
         .hand
@@ -73,11 +88,29 @@ async fn run() -> Result<()> {
     let system_prompt = std::fs::read_to_string(&args.system_prompt)
         .with_context(|| format!("reading system prompt at {}", args.system_prompt.display()))?;
 
-    let client = OllamaClient::new(args.ollama_url, args.model);
+    let client = OllamaClient::new(args.ollama_url, args.model)
+        .show_thinking(args.show_thinking)
+        .show_content_stream(args.verbose >= 1);
     let response = bid(&hand, &auction, &system_prompt, &client)
         .await
         .context("LLM bid request failed")?;
 
     println!("{}", serde_json::to_string_pretty(&response)?);
     Ok(())
+}
+
+fn init_tracing(verbosity: u8) {
+    // Silent by default. -v shows debug, -vv shows trace. RUST_LOG overrides.
+    let default = match verbosity {
+        0 => "cardturner=warn",
+        1 => "cardturner=debug",
+        _ => "cardturner=trace",
+    };
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(default));
+    fmt()
+        .with_env_filter(filter)
+        .with_writer(std::io::stderr)
+        .with_target(false)
+        .without_time()
+        .init();
 }
