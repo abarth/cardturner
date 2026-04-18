@@ -1,0 +1,9 @@
+{
+  "name": "Takeout double of 1H opening",
+  "hand": "S:AQ54 H:3 D:KJ87 C:AT93",
+  "dealer": "N",
+  "vul": "None",
+  "auction": "1H",
+  "expected_bid": "X",
+  "notes": "13 HCP, short in hearts (singleton), support for the other three suits. Classic SAYC takeout double."
+}

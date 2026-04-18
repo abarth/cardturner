@@ -1,0 +1,24 @@
+# Rust build output
+/target
+
+# Backup files from `cargo fmt` etc.
+**/*.rs.bk
+
+# insta snapshot review artifacts (committed snapshots live alongside tests)
+**/*.snap.new
+**/*.pending-snap
+.insta/
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Local environment overrides
+.env
+.env.local

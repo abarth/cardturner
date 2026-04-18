@@ -1,0 +1,23 @@
+---
+source: tests/prompt_snapshot.rs
+expression: msg
+---
+Bidding situation:
+- Dealer: N
+- Vulnerability: N/S
+- You are sitting: S
+
+Auction so far:
+    N     E     S     W
+  1NT   Pass  ?     
+
+Your hand:
+♠ Q765  ♥ KJ32  ♦ T9  ♣ A54
+- HCP: 10
+- Distribution (S-H-D-C): 4-4-2-3
+- Compact: S:Q765 H:KJ32 D:T9 C:A54
+
+What is your call? Respond with a single JSON object of the form
+{"bid": "<call>", "reason": "<one or two sentences>"}
+where <call> is one of: "Pass", "X" (double), "XX" (redouble),
+or a contract like "1NT", "4S", "3D". No prose outside the JSON.

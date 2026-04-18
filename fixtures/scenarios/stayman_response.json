@@ -1,0 +1,9 @@
+{
+  "name": "Stayman over partner's 1NT with 4-4 majors",
+  "hand": "S:KJ54 H:AT82 D:Q53 C:74",
+  "dealer": "N",
+  "vul": "None",
+  "auction": "1NT P",
+  "expected_bid": "2C",
+  "notes": "9 HCP, 4-4 majors, partner opened 1NT. Stayman (2C) to find a 4-4 major fit."
+}

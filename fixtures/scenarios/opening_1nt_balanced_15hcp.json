@@ -1,0 +1,9 @@
+{
+  "name": "Open 1NT with balanced 15 HCP",
+  "hand": "S:KQ4 H:AJ9 D:KT76 C:K32",
+  "dealer": "N",
+  "vul": "None",
+  "auction": "",
+  "expected_bid": "1NT",
+  "notes": "16 HCP, distribution 3-3-4-3 (balanced). Squarely in the 15-17 range for a 1NT opening."
+}
